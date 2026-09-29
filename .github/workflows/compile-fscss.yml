@@ -33,7 +33,7 @@ jobs:
 
       - name: Compile fscss
         run: |
-          fscss landing.fscss landing.css
+          fscss fscss/landing.fscss app/static/css/landing.css
           echo "Compiled landing.css ($(wc -c < landing.css) bytes)"
 
       - name: Upload compiled CSS

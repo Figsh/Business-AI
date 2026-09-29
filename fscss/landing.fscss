@@ -5,7 +5,7 @@
 @import((
 resets, 
 base-style as base
-) from "fscss/base.fscss")
+) from "base.fscss")
 
 @import((*) from flex-control)
 

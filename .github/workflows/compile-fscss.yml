@@ -1,0 +1,58 @@
+# Compile fscss 
+name: Compile fscss
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'fscss/**/*.fscss'
+      - '.github/workflows/compile-fscss.yml'
+  pull_request:
+    paths:
+      - 'fscss/**/*.fscss'
+      - '.github/workflows/compile-fscss.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install FSCSS CLI
+        run: npm install -g fscss@1.2.4
+
+      - name: Compile admin-dashboard
+        working-directory: templates/admin-dashboard
+        run: |
+          fscss landing.fscss landing.css
+          echo "Compiled landing.css ($(wc -c < landing.css) bytes)"
+
+      - name: Upload compiled CSS
+        uses: actions/upload-artifact@v4
+        with:
+          name: template-css
+          path: |
+            app/static/landing.css
+
+      - name: Commit compiled CSS
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/static/css/landing.css
+          if git diff --staged --quiet; then
+            echo "No CSS changes to commit"
+          else
+            git commit -m "chore: compile CSS [skip ci]"
+            git push
+          fi

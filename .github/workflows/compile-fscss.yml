@@ -31,8 +31,7 @@ jobs:
       - name: Install FSCSS CLI
         run: npm install -g fscss@1.2.4
 
-      - name: Compile admin-dashboard
-        working-directory: templates/admin-dashboard
+      - name: Compile fscss
         run: |
           fscss landing.fscss landing.css
           echo "Compiled landing.css ($(wc -c < landing.css) bytes)"
